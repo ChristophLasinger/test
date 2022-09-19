@@ -10,6 +10,8 @@ export class MenuComponent implements OnInit {
   constructor() { }
 
   ngOnInit(): void {
+    let model = localStorage.getItem("vrm-model");
+    alert(model)
   }
 
 }

@@ -12,4 +12,8 @@ export class HomeComponent implements OnInit {
   ngOnInit(): void {
   }
 
+  SelectModel(model: string) {
+    window.localStorage.setItem("vrm-model", model);
+    window.location.href='menu';
+  }
 }
