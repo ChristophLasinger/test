@@ -11,6 +11,7 @@ export class MenuComponent implements OnInit {
 
   ngOnInit(): void {
     let model = localStorage.getItem("vrm-model");
+    localStorage.removeItem("vrm-model");
     alert(model)
   }
 
