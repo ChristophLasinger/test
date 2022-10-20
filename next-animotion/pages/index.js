@@ -25,7 +25,6 @@ export default function Home() {
       <a href="webapp" className="btn btn-primary">Mediaplayer</a>
       <a href="about" className="btn btn-primary">About us</a>
     </div>
-    <a href="/webapp/index.html">amogus</a>
     </>
   )
 }
