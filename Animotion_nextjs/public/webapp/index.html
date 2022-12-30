@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>AniMotion</title>
+  
+    <script src="lib_scripts/three.js"></script>
+    <script src="lib_scripts/GLTFLoader.js"></script>
+    <script src="lib_scripts/OrbitControls.js"></script>
+    <script src="lib_scripts/three-vrm.js"></script>
+    <script src="scripts/options.js"></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/@mediapipe/holistic@0.5.1635989137/holistic.js"
+      crossorigin="anonymous"
+    ></script>
+
+    <script
+      src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"
+      crossorigin="anonymous"
+    ></script>
+    <script src="https://cdn.jsdelivr.net/npm/kalidokit@1.1/dist/kalidokit.umd.js"></script>
+    <link rel="stylesheet" href="style_css/style.css" />
+    <link rel="stylesheet" href="style_css/screen_style.css" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+  </head>
+  <body style="background-image: url(assets/animotion_pattern2.jpg)">
+
+    <div class="return_button">
+      <button style="background-color: rgba(51, 170, 51, 0)" onclick="get_vision()" class="button1 button_vertically button_size"><p> <i class="	glyphicon glyphicon-off"></i> toggle windows</p></button>
+      <button id="return_vision" onclick="window.location.href = '/';"class="button1 button_vertically button_size" href="/"><p><i class="glyphicon glyphicon-arrow-left"></i> back to menu</p></button>
+    </div>
+
+    <div id="control_vision" class="controls_mouse">
+      <p class="control_view"><svg width="24" height="24" stroke-width="1.5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"> <path d="M4 10V14C4 18.4183 7.58172 22 12 22C16.4183 22 20 18.4183 20 14V9C20 5.13401 16.866 2 13 2H12C7.58172 2 4 5.58172 4 10Z" stroke="currentColor" stroke-linecap="round"/> <path d="M12 2V8.4C12 8.73137 12.2686 9 12.6 9H20" stroke="currentColor" stroke-linecap="round"/></svg> Hold right click to move the model</p>
+      <p class="control_view"><svg width="24" height="24" stroke-width="1.5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"> <path d="M20 10V14C20 18.4183 16.4183 22 12 22C7.58172 22 4 18.4183 4 14V9C4 5.13401 7.13401 2 11 2H12C16.4183 2 20 5.58172 20 10Z" stroke="currentColor" stroke-linecap="round"/> <path d="M12 2V8.4C12 8.73137 11.7314 9 11.4 9H4" stroke="currentColor" stroke-linecap="round"/> </svg> Hold left click to rotate the model</p>
+      <p class="control_view"><svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="currentColor" class="bi bi-mouse" viewBox="0 0 16 16"> <path d="M8 3a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 3zm4 8a4 4 0 0 1-8 0V5a4 4 0 1 1 8 0v6zM8 0a5 5 0 0 0-5 5v6a5 5 0 0 0 10 0V5a5 5 0 0 0-5-5z"/> </svg> Mouse scroll to zoom in and out</p>
+    
+    </div>
+
+    <div id="record_vision" style="background-color: rgba(51, 170, 51, 0)" class="screen">
+      <video controls autoplay playsinline></video>
+
+      <div id="controls">
+        <button class="button1 button_inline" id="btn-start-recording">
+          Start Recording
+        </button>
+        <button class="button1 button_inline" id="btn-stop-recording" disabled>
+          Stop Recording
+        </button>
+        <p id="message" />
+        <script src="https://www.WebRTC-Experiment.com/RecordRTC.js"></script>
+        <script src="https://unpkg.com/@ffmpeg/ffmpeg@0.9.5/dist/ffmpeg.min.js"></script>
+        <script>
+          const video = document.querySelector("video");
+          const message = document.getElementById("message");
+          const { createFFmpeg, fetchFile } = FFmpeg;
+          const ffmpeg = createFFmpeg({
+            log: true,
+            progress: showProgress,
+          });
+
+          if (
+            !navigator.getDisplayMedia &&
+            !navigator.mediaDevices.getDisplayMedia
+          ) {
+            var error = "Your browser does NOT supports getDisplayMedia API.";
+            document.querySelector("h1").innerHTML = error;
+
+            video.style.display = "none";
+            document.getElementById("btn-start-recording").style.display =
+              "none";
+            document.getElementById("btn-stop-recording").style.display =
+              "none";
+            throw new Error(error);
+          }
+
+          function invokeGetDisplayMedia(success, error) {
+            var displaymediastreamconstraints = {
+              video: {
+                displaySurface: "monitor",
+                logicalSurface: true,
+                cursor: "always",
+              },
+            };
+
+            displaymediastreamconstraints = {
+              video: true,
+            };
+
+            if (navigator.mediaDevices.getDisplayMedia) {
+              navigator.mediaDevices
+                .getDisplayMedia(displaymediastreamconstraints)
+                .then(success)
+                .catch(error);
+            } else {
+              navigator
+                .getDisplayMedia(displaymediastreamconstraints)
+                .then(success)
+                .catch(error);
+            }
+          }
+
+          function captureScreen(callback) {
+            invokeGetDisplayMedia(
+              function (target) {
+                addStreamStopListener(target, function () {
+                  if (window.stopCallback) {
+                    window.stopCallback();
+                  }
+                });
+                callback(target);
+              },
+              function (error) {
+                console.error(error);
+                alert(
+                  "Unable to capture your screen. Please check console logs.\n" +
+                    error
+                );
+              }
+            );
+          }
+
+          function captureCallback(target) {
+            video.srcObject = target;
+
+            var recorder = RecordRTC(target, {
+              type: "video",
+              mimeType: "video/webm",
+            });
+
+            recorder.startRecording();
+
+            window.stopCallback = function () {
+              window.stopCallback = null;
+
+              recorder.stopRecording(function () {
+                var blob = recorder.getBlob();
+                var fileUrl = URL.createObjectURL(blob);
+                video.srcObject = null;
+                video.src = fileUrl;
+
+                target.stop();
+
+                recorder.save("screen_recording.webm");
+                recorder.destroy();
+                recorder = null;
+              });
+            };
+          }
+
+          function addStreamStopListener(stream, callback) {
+            stream.addEventListener(
+              "ended",
+              function () {
+                callback();
+                callback = function () {};
+              },
+              false
+            );
+            stream.addEventListener(
+              "inactive",
+              function () {
+                callback();
+                callback = function () {};
+              },
+              false
+            );
+            stream.getTracks().forEach(function (track) {
+              track.addEventListener(
+                "ended",
+                function () {
+                  callback();
+                  callback = function () {};
+                },
+                false
+              );
+              track.addEventListener(
+                "inactive",
+                function () {
+                  callback();
+                  callback = function () {};
+                },
+                false
+              );
+            });
+          }
+
+          document.getElementById("btn-start-recording").onclick = function () {
+            this.disabled = true;
+            captureScreen(captureCallback);
+            document.getElementById("btn-stop-recording").disabled = false;
+          };
+
+          document.getElementById("btn-stop-recording").onclick = function () {
+            this.disabled = true;
+            window.stopCallback();
+          };
+
+          function promptDownload(fileURL) {
+            var anchorTag = document.createElement("a");
+            anchorTag.href = fileURL;
+            anchorTag.target = "_blank";
+            anchorTag.download = "converted_video.gif";
+            document.body.appendChild(anchorTag);
+            anchorTag.click();
+            document.body.removeChild(anchorTag);
+          }
+
+          function showProgress({ ratio }) {
+            if (!isNaN(ratio)) {
+              message.innerHTML = `Complete: ${(ratio * 100.0).toFixed(2)}%`;
+            } else {
+              if (message.innerHTML == "/") {
+                message.innerHTML = "-";
+              } else if (message.innerHTML == "-") {
+                message.innerHTML = "\\";
+              } else {
+                message.innerHTML = "/";
+              }
+            }
+          }
+
+          const convert = async (sourceFileUrl) => {
+            if (!ffmpeg.isLoaded()) {
+              message.innerHTML = "Loading ffmpeg-core.js";
+              await ffmpeg.load();
+            }
+            message.innerHTML = "Start converting";
+            ffmpeg.FS("writeFile", "recording", await fetchFile(sourceFileUrl));
+            await ffmpeg.run(
+              "-i",
+              "recording",
+              "-vf",
+              "fps=10,split[s0][s1];[s0]palettegen[p];[s1][p]paletteuse",
+              "output.gif"
+            );
+            message.innerHTML = "Conversion complete.";
+            const data = ffmpeg.FS("readFile", "output.gif");
+            const blob = new Blob([data.buffer], { type: "image/gif" });
+            const fileUrl = URL.createObjectURL(blob);
+            promptDownload(fileUrl);
+          };
+        </script>
+      </div>
+    </div>
+    <div id="preview_vision" class="preview">
+      <video
+        class="input_video video_transformer"
+        width="1920px"
+        height="1080px"
+        autoplay
+        muted
+        playsinline
+      ></video>
+      <canvas class="guides"></canvas>
+    </div>
+    <script src="scripts/script.js"></script>
+  </body>
+</html>
