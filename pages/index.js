@@ -23,7 +23,7 @@ export default function Home() {
         >
           <img
             className="vrm-image"
-            src="test\public\images\vrms\yor2_blackbackground.jpg"
+            src="test/public/images/vrms/yor2_blackbackground.jpg"
             alt="virtual model black haired boy with glasses"
           />
         </button>
@@ -39,7 +39,7 @@ export default function Home() {
         >
           <img
             className="vrm-image"
-            src="/images/vrms/vampire_blackbackground.jpg"
+            src="https://cdn.glitch.global/14365248-98f0-4e5a-a5a3-1a7cd5ad47c8/vampire_blackbackground.jpg?v=1672419201319"
             alt="virtual model black haired boy with glasses"
           />
         </button>
@@ -55,7 +55,7 @@ export default function Home() {
         >
           <img
             className="vrm-image"
-            src="/images/vrms/lgtbq_girl_blackbackground.jpg"
+            src="https://cdn.glitch.global/14365248-98f0-4e5a-a5a3-1a7cd5ad47c8/lgtbq_girl_blackbackground.jpg?v=1672419182513"
             alt="virtual model black haired boy with glasses"
           />
         </button>
