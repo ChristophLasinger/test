@@ -23,7 +23,7 @@ export default function Home() {
         >
           <img
             className="vrm-image"
-            src="/images/vrms/yor2_blackbackground.jpg"
+            src="public/images/vrms/yor2_blackbackground.jpg"
             alt="virtual model black haired boy with glasses"
           />
         </button>
